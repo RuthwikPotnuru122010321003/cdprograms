@@ -1,0 +1,60 @@
+YACC program for Conversion of Infix to Postfix expression
+
+lex program - 
+
+%{
+#include"intopr.tab.h"
+%}
+
+%%
+[0-9]+  {yylval=atoi(yytext); return NUMBER;}
+.|\n       return *yytext;
+%%
+
+int yywrap()
+{
+    return 1;
+}
+
+yacc program - 
+
+%{
+ #define YYSTYPE double
+ #include <stdio.h>
+ #include<ctype.h>
+
+ void yyerror(char *);
+ 
+%}
+
+%token NUMBER
+%left '+'  '-'
+%left '*'  '/'
+%right UMINUS
+%right '^'
+
+%%
+lines: E '\n' { printf("\n");}
+|
+;
+E :E'+'E { printf(" + ");}
+  |E'-'E { printf(" - ");}
+  |E'*'E { printf(" * ");}
+  |E'/'E { printf(" / ");}
+  |'('E')' 
+  |NUMBER { printf("%d",yylval);}
+  ;
+
+%%
+
+void yyerror(char *s)
+{
+ fprintf(stderr, "%s\n", s);
+}
+
+int main(void)
+{
+ printf("\nEnter the infix : ");
+ yyparse();
+ return 0;
+} 
